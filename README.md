@@ -1,14 +1,13 @@
-# Simple OS
-
-<img src="res/simple-os-banner.png">
+# Fallout Terminal OS
 
 ## Description
 
-Test OS project for x86_32 platform. ([documentation](doc/README.md))
+This project was made on top of [simple-os](https://github.com/alkuzin/simple-os/) and [fallout terminal
+library](https://github.com/alkuzin/FalloutTerminal).
 
 ## Tools
-The project was made on Debian 12
 
+The project was made on Debian 12
  - GCC (13.2.0)
  - NASM (2.16.01)
  - GNU Make (4.3)
@@ -17,6 +16,51 @@ The project was made on Debian 12
  - truncate (9.4)
  - QEMU emulator (8.2.1)
  - GNU GRUB (2.12-1)
+
+## 3. Installation
+First clone this repository:
+```console
+https://github.com/alkuzin/fallout-terminal-os.git
+```
+Then move to the `fallout-terminal-os/` directory:
+```console
+cd fallout-terminal-os/
+```
+
+To build kernel run:
+
+```console
+make all
+```
+
+To run OS on QEMU use this:
+ ```console
+make init
+```
+
+To return everything to original state:
+```console
+make fclean
+```
+
+## Project
+
+There are 3 builtin types of terminal:
+ - institute terminal
+ - Mass Fusion terminal
+ - Brotherhood Of Steel terminal
+
+## Institute terminal
+
+<img src="res/fallout-terminal-os.gif">
+
+## Mass Fusion terminal
+
+<img src="res/mass-fusion-terminal.png">
+
+## Brotherhood Of Steel terminal
+
+<img src="res/bos-terminal.png">
 
 ## License
 
@@ -41,67 +85,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-## Updates history
-
-> simple-os (v0.0.1):
-- added `kmain()`
-- added kernel library `libk` (`<string.h>`, `<ctype.h>`, `<stddef.h>`, `<stdint.h>`)
-- added text output to VGA
-
-> simple-os (v0.0.2):
-- added `kprintf()` function (*%#xXidpusc* options of standard C library printf)
-- added to libk `<stdarg.h>`, `<memory.h>`, `<math.h> `
-
-> simple-os (v0.0.3):
-- added VGA driver
-- added color printing function `kprintc()` with 16 colors
-
-<img src="res/simple-os-vga-output.png">
-
-> simple-os (v0.0.4):
-- added `ksleep()` & `__ksleep()` functions in `<kernel.h>`
-- modified VGA driver (added new functions: `update_cursor()`, `port_byte_out()`)
-- added default background and foreground colors in `kernel/tty.h`
-- added VGA scrolling (`__kscroll()`)
-
-<img src="res/simple-os-vga-scroll.gif">
-
-> simple-os (v0.0.5):
-- added `\v` `\t` `\r` `\b` special characters support in `kputchar()`
-- define a signed integer types in `<stdint.h>`
-- added `kvprintf()` function
-- added kernel halt `khalt()` & kernel panic `kpanic()` for detecting errors 
-- added Global Descriptor Table
-
-<img src="res/simple-os-kernel-panic.png">
-
-> simple-os (v0.0.6):
-- added ports in `<ports.h>`
-- added TSS (Task State Segment) entry in `<gdt.h>`
-- added IDT (Interrupt Descriptor Table) in `<idt.h>`
-- added GNU GRUB support
-- added IRQ (Interrupt Request) in `<irq.h>`
-
-> simple-os (v0.0.7):
-- added PIT (Programmable Interval Timer) in `<timer.h>`
-- added keyboard driver in `<keyboard.h>`
-
-<img src="res/simple-os-keyboard.gif">
-
-> simple-os (v0.0.8):
-- added multiboot information structure in `<multiboot.h>`
-- added physical memory manager in `<pmm.h>`
-- added virtual memory manager in `<vmm.h>`
-- added main memory manager in `<mm.h>`
-
-<img src="res/simple-os-memory-management.png">
-
-> simple-os (v0.0.9):
-- added `kmalloc()` & `kfree()` functions for dynamic memory allocation
-- added option to set default color
-- added `keyboard_wait()` & `keyboard_getchar()` functions in `keyboadrd.h`
-- added kernel shell in `ksh.h`
-- added simple-os standard functions in `sstd.h`
-
-<img src="res/simple-os-kernel-shell.gif">
