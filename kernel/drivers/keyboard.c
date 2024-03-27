@@ -22,7 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <libfterm/terminal.h>
 #include <kernel/keyboard.h>
+#include <libfterm/login.h>
+#include <libfterm/utils.h>
 #include <kernel/ports.h>
 #include <libk/stdint.h>
 #include <libk/stddef.h>
@@ -101,20 +104,76 @@ UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,
 UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,
 UNKNOWN,UNKNOWN,UNKNOWN };
 
+extern terminal_t *terminal;
+extern int selected;
+
 bool caps_is_on, caps_lock_is_on;
 
-
-void keyboard_init(void)
+void keyboard_init(void) 
 {
-    caps_is_on = false;
+    caps_is_on      = false;
     caps_lock_is_on = false;
-
+    selected        = 0;
     irq_install_handler(1, &keyboard_handler);
 }
 
 void keyboard_handler(__attribute__((unused)) int_reg_t *regs)
 {
-    /* do nothing */
+    uint8_t scan_code, press;
+    int size;
+
+    if (is_terminal_set) {
+
+        size = terminal->options->size;
+
+        /* get code of key that is pressed */
+        scan_code = in_port_b(0x60) & 0x7F;
+
+        /* is key is pressed down or released */
+        press = in_port_b(0x60) & 0x80;
+
+        if(!press) {
+            switch(scan_code) {    
+                case KEY_UP_ARROW:
+                    __kclear();
+                    selected--;
+                    
+                    if (selected < 0)
+                        selected = size - 1;
+                    
+                    terminal_print_options();
+                    break;
+
+                case KEY_DOWN_ARROW:
+                    __kclear();
+                    selected++;
+                    
+                    if (selected >= size)
+                        selected = 0;
+                    
+                    terminal_print_options();
+                    break;
+                
+                case KEY_ENTER:
+                    terminal_print_content();
+                    break;
+                
+                case KEY_TAB:
+                    __kclear();
+
+                    if (terminal->parent_window != (void *) terminal->prev_options)
+                        terminal->options = terminal->options;
+                    else
+                        terminal->options = terminal->prev_options;
+                    
+                    terminal_print_options();
+                    break;
+                
+                default:
+                    break;
+            }
+        }
+    }
 }
 
 void keyboard_wait(void) {
