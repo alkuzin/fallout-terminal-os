@@ -66,9 +66,140 @@ static void kboot(multiboot_t *boot_info)
     /* TODO: ROBCO boot entry */
 
 }
+const char *success_msg = "\nLOGIN AS ADMINISTRATOR\n"
+    "PASSWORD: * * * * *\n\nSTATUS: COMPLETE\n\n\n";
 
-/* kernel entry point */
-extern void kmain(__attribute__((unused)) uint32_t magic, multiboot_t *boot_info)
+const char *failure_msg = "\n\n\n\n\n\t\t\t\t\t\t\t\t TERMINAL LOCKED\n"
+    "\t\t\t\t\t\t\t\tPLEASE CONTACT AN\n"
+    "\t\t\t\t\t\t\t\t  ADMINISTRATOR";
+
+void institute_terminal_init(multiboot_t *boot_info);
+//void bos_terminal_init(multiboot_t *boot_info);
+void mass_fusion_terminal_init(multiboot_t *boot_info);
+
+void mass_fusion_terminal_init(multiboot_t *boot_info)
+{
+    vga_color_t fg, bg;
+
+    fg = VGA_COLOR_LIGHT_GREEN;
+    bg = VGA_COLOR_BLACK;
+    __set_default_color(fg, bg);
+
+	__kclear(); /* clear screen */
+    kboot(boot_info); /* boot kernel */
+    
+    const char *terminal_title = 
+    "Mass FusionOS v4.86\n"
+    "Main Reactor - Prototype Engineering\n\n\n";
+
+    // initialize login process
+    if (login_init("ROBCO INDUSTRIES (TM) TERMLINK PROTOCOL\n"))
+        login_success(success_msg);
+    else
+        login_failure(failure_msg);
+	
+    __kclear(); /* clear screen */
+
+    // set options
+    static option_t options[3];
+    static option_t suboptions[2];
+
+    suboptions[0] = (option_t) {
+        .title="Activate",
+        .content=
+        "STATUS: Unit(s) Charging/Inactive\n"
+        "CONNECTED: 1 Unit(s) Connected to this terminal\n\n"
+        "Activate Unit(s)\n"
+        "\n...Accessing pod...\n"
+        "...Initializing unit...\n"
+        "...Loading assigned subroutines...\n\n"
+        "Please advise any personnel standing near charge pod to make way.\n",
+        .type=TEXT,
+        .size=2
+    };
+
+    suboptions[1] = (option_t) {
+        .title="Shutdown",
+        .content=
+        "STATUS: Unit(s) Charging/Inactive\n"
+        "CONNECTED: 1 Unit(s) Connected to this terminal\n\n"
+        "Shut-Down Unit(s)\n"
+        "\n...Accessing pod...\n"
+        "...Pinging Protectron Unit...\n"
+        "...Broadcasting shut-down signal...\n\n"
+        "Please ensure that Charge Pod is unobstructed.\n",
+        .type=TEXT,
+        .size=2
+    };
+
+    options[0] = (option_t) {
+        .title="Research IntraMail 07-30-77",
+        .content=
+        "To: Reactor Team\n"
+        "From: N. Chandrich, Research Lead\n\n"
+        "Today we embark on a new frontier. Once the switch on the reactor is thrown,\n"
+        "and the Beryllium Agitator cold-starts the fusion reaction, the reality of \n"
+        "Cleanpower nuclear energy will be upon us all. As the research lead on the \n"
+        "project, I'd like to thank you all for contributing to the cause.\n"
+        "Good luck and godspeed!\n",
+        .type=TEXT,
+        .size=5
+    };
+
+    options[1] = (option_t) {
+        .title="Personal IntraMail 8-01-77",
+        .content=
+        "To: D. Wahbash, X. Vincent, C. Collins\n"
+        "From: B. Thorpe, Prototype Engineering\n\n"
+        "Tamash reaches into his pouch and sprinkles his communing dust in a circle \n"
+        "around himself. He closes his eyes and calls upon the Knowledge \n"
+        "of Deeligasa. \"Deeligasa, Sage of the Ages, show me what my eyes can't see!\"\n",
+        .type=TEXT,
+        .size=5
+    };
+
+    options[2] = (option_t) {
+        .title="Personal IntraMail 8-02-77",
+        .content=
+        "To: D. Wahbash, X. Vincent, C. Collins\n"
+        "From: B. Thorpe, Prototype Engineering\n\n"
+        "Tamash stops casting and switches to his Staff of Brilliant Sunlight.\n"
+        "He incants the words and raises the staff high over his head to \n"
+        "illuminate the room. He proudly yells aloud \n"
+        "\"Dark foe, prepare to be revealed!\"\n",
+        .type=TEXT,
+        .size=5
+    };
+
+    options[3] = (option_t) {
+        .title="Personal IntraMail 8-03-77",
+        .content=
+        "To: D. Wahbash, X. Vincent, C. Collins\n"
+        "From: B. Thorpe, Prototype Engineering\n\n"
+
+        "Tamash drops the staff, reaches into his left front pocket and \n"
+        "pulls out a pinch of sulfur powder. He incants the Flameblaze spell \n"
+        "and blows into the pile of powder towards the beast. If it works, \n"
+        "the things has to make a -5 fire check.\n",
+        .type=TEXT,
+        .size=5
+    };
+
+    options[4] = (option_t) {
+        .title="Protectron Control",
+        .content=&suboptions,
+        .type=DIRECTORY,
+        .size=5
+    };
+
+    terminal->fg = fg;
+    terminal->bg = bg;
+
+    // initializing terminal
+    terminal_init(terminal_title, DEFAULT_FIELD_WIDTH, options);
+}
+    
+void institute_terminal_init(multiboot_t *boot_info)
 {
     vga_color_t fg, bg;
 
@@ -79,101 +210,196 @@ extern void kmain(__attribute__((unused)) uint32_t magic, multiboot_t *boot_info
 	__kclear(); /* clear screen */
     kboot(boot_info); /* boot kernel */
     
-    // set default settings TODO: make macros for success_msg & failure_msg 
     const char *terminal_title = 
     "==== Institute Central Network ====\n"
-    "Advanced Systems Terminal 1A     \n\n";
+    "SYNTH RETENTION BUREAU TERMINAL 2B\n\n";
     
-    const char *success_msg = "\nLOGIN AS ADMINISTRATOR\n"
-        "PASSWORD: * * * * *\n\nSTATUS: COMPLETE\n\n\n";
-    
-    const char *failure_msg = "\n\n\n\n\n\t\t\t\t\t\t\t\t TERMINAL LOCKED\n"
-        "\t\t\t\t\t\t\t\tPLEASE CONTACT AN\n"
-        "\t\t\t\t\t\t\t\t  ADMINISTRATOR";
-
     // initialize login process
-    if (login_init("ROBCO INDUSTRIES (TM) TERMLINK PROTOCOL\n")) {
+    if (login_init("ROBCO INDUSTRIES (TM) TERMLINK PROTOCOL\n"))
         login_success(success_msg);
-    }
-    else {
+    else
         login_failure(failure_msg);
-    }
 	
     __kclear(); /* clear screen */
 
     // set options
-    option_t options[3];
-    option_t opt_list_personal_notes[2];
+    static option_t options[3];
+    static option_t suboptions[3];
 
-    opt_list_personal_notes[0] = (option_t) {
-        .title="Cold Fusion",
+    suboptions[0] = (option_t) {
+        .title="Brotherhood of Steel",
         .content=
-        "Proposal:\n\n"
-        "Divert time/materials from current Phase Three research to exploring the\n"
-        "possibility of sustainable nuclear reactions through electrochemical processes at\n"
-        "or near room temperatures. Pre-war work on the subject yielded no concrete\n"
-        "results; advances in technology could potentially make it possible.\n\n"
-        "Approval:\n\n"
-        "Rejected - Li.M\n"
-        "Notes: Evidence suggests this is, and always will be, a pipe dream.\n",
-        .type=TEXT,
-        .size=2
-    };
-
-    opt_list_personal_notes[1] = (option_t) {
-        .title="Surface Work Crew Tracking",
-        .content=
-        "Group Ident: G1486\n"
-        "Assigned Units: R7-81, T3-54, B8-88, J1-74\n"
-        "Location: Site Alpha\n"
-        "Elapsed Time: 160:33:12\n"
-        "Last Report: 1:56:40\n\n"
-        "NOTES:\n"
-        "Unit B8-88 removed, unit T3-54 added. [ERROR, NO DATA PRESENT]\n",
-        .type=TEXT,
-        .size=2
-    };
-
-    options[0] = (option_t) {
-        .title="View Access Logs",
-        .content= 
-        "Access: Local. Login: Li.M\n"
-        "Notes: Review of Phase Three project status\n\n"
-        "Access: Local. Login: Li.M\n"
-        "Notes: update diagnostic tools for child synth project\n\n"
-        "Access: Remote. Login: DIRECTOR\n"
-        "Notes: --REDACTED--\n\n"
-        "Access: Local. Login: Li.M\n"
-        "Notes: Review of all BioScience projects\n\n\n",
+        "BROTHERHOOD OF STEEL\n\n"
+        "Threat level: Primary\n\n"
+        "Brotherhood forces recently arrived in strength. believed to \n"
+        "be constructing new weapon that could pose direct threat \n"
+        "to Institute... Boston Airport now under Brotherhood control... \n"
+        "Surface operators should avoid this area.\n",
         .type=TEXT,
         .size=3
     };
 
-    options[1] = (option_t) {
-        .title="Incident Reports",
+    suboptions[1] = (option_t) {
+        .title="Railroad",
         .content=
-        "   ****Incident Reports****\n\n\n"
-        "Incident IN2845t\n\n"
-        "Patient: Thompson.E\n"
-        "Presenting symptom: First-degree burns, left hand\n"
-        "Notes: Patient placed his hand inside power\n"
-        "relay without first disengaging. First aid applied.\n",     
+        "RAILROAD\n\n"
+        "Threat level: Secondary\n\n"
+        "Railroad continues to be elusive. Preventing synth escapes is \n"
+        "vital to countering Railroad operations. Possible Railroad agent \n"
+        "or sympathizer within Institute. Continue to press informants for \n"
+        "new information.\n",
+        .type=TEXT,
+        .size=3
+    };
+
+    suboptions[2] = (option_t) {
+        .title="Raider Gangs",
+        .content=
+        "RAIDER GANGS\n\n"
+        "Threat level: Tertiary\n\n"
+        "Raider gangs remain disorganized and scattered. major areas of \n"
+        "activity include Libtertalia, Corvega, Saugus Ironworks, \n"
+        "Beantown Brewery, D.B. Technical High School and Hyde Park. \n"
+        "extreme caution is warranted when operating in these areas.\n",
+        .type=TEXT,
+        .size=3
+    };
+
+    options[0] = (option_t) {
+        .title="Threat Assessment", 
+        .content=&suboptions,
+        .type=DIRECTORY,
+        .size=3
+    };
+    
+    options[1] = (option_t) {
+        .title="Watcher Allocation",
+        .content= 
+        "CURRENT WATCHER ALLOCATION\n\n"
+        "Diamond City: 4 pods\n"
+        "Fort Hagen: 2 pods\n"
+        "Warwick Homestead: 1 pod\n"
+        "Goodneighbor: 3 pods\n"
+        "Covenant: 1 pod\n"
+        "Vault 81: 1 pod\n"
+        "Libertalia: 2 pods\n",
         .type=TEXT,
         .size=3
     };
 
     options[2] = (option_t) {
-        .title="Personal Notes", 
-        .content=&opt_list_personal_notes,
-        .type=DIRECTORY,
+        .title="View Access Logs",
+        .content=
+        "ACCESS LOG\n\n"
+        "Access: Local. Login: Secord.A\n"
+        "Accessed Watcher Allocation\n\n"
+        "Access: Local. Login: Ayo.J\n"
+        "Operation: Update Threat Assessment\n\n"
+        "Access: Local. Login: X6-88\n"
+        "Accessed Threat Assessment\n\n"
+        "Access: Local. Login: Ayo.J\n"
+        "Operation: Update Watcher Allocation\n\n"
+        "Access: Local. Login: Secord.A\n"
+        "Accessed Threat Assessment\n",
+        .type=TEXT,
         .size=3
     };
-    
+
     terminal->fg = fg;
     terminal->bg = bg;
 
     // initializing terminal
     terminal_init(terminal_title, DEFAULT_FIELD_WIDTH, options);
+}
+
+void bos_terminal_init(multiboot_t *boot_info)
+{
+    vga_color_t fg, bg;
+
+    fg = VGA_COLOR_YELLOW;
+    bg = VGA_COLOR_BLACK;
+    __set_default_color(fg, bg);
+
+	__kclear(); /* clear screen */
+    kboot(boot_info); /* boot kernel */
+    
+    const char *terminal_title = 
+    "Prydwen Internal Network\n"
+    "General Information System - Official Use Only\n\n";
+    
+    // initialize login process
+    if (login_init("ROBCO INDUSTRIES (TM) TERMLINK PROTOCOL\n"))
+        login_success(success_msg);
+    else
+        login_failure(failure_msg);
+	
+    __kclear(); /* clear screen */
+
+    // set options
+    static option_t options[6];
+
+    options[0] = (option_t) {
+        .title="Announcement 001", 
+        .content=
+        "All recovered technology must be presented immediately to \n"
+        "Proctor Quinlan for evaluation. Anyone found in possession of \n"
+        "undocumented technologies will be subject to inquiry and punishment.\n",
+        .type=TEXT,
+        .size=5
+    };
+
+    options[1] = (option_t) {
+        .title="Announcement 002", 
+        .content=
+        "Scribe Neriah's Mole Rat subjects are not pets. They are crucial \n"
+        "military resources. As such, they are not to be fed by any personnel \n"
+        "save Scribe Neriah and her team. Any violation of this policy will \n"
+        "result in severe disciplinary action.\n",
+        .type=TEXT,
+        .size=5
+    };
+
+    options[2] = (option_t) {
+        .title="Announcement 003", 
+        .content=
+        "Due to increased Raider activity, all leave requests to off-base sites \n"
+        "have been temporarily suspended. Affected parties will have their leave \n"
+        "compensated at the next available opportunity.\n",
+        .type=TEXT,
+        .size=5
+    };
+
+    options[3] = (option_t) {
+        .title="Announcement 004", 
+        .content=
+        "This is a notice to all personnel. Please think of your brothers and \n"
+        "sisters down below. Thoroughly secure all gear while on the Flight Deck.\n",
+        .type=TEXT,
+        .size=5
+    };
+
+    options[4] = (option_t) {
+        .title="Announcement 005", 
+        .content=
+        "Any personnel who have not completed their annual medical evaluation \n"
+        "should report to Knight-Captain Cade immediately to schedule an examination.\n",
+        .type=TEXT,
+        .size=5
+    };
+
+    terminal->fg = fg;
+    terminal->bg = bg;
+
+    // initializing terminal
+    terminal_init(terminal_title, DEFAULT_FIELD_WIDTH, options);
+}
+
+/* kernel entry point */
+extern void kmain(__attribute__((unused)) uint32_t magic, multiboot_t *boot_info)
+{
+    //institute_terminal_init(boot_info);
+    //mass_fusion_terminal_init(boot_info);
+    bos_terminal_init(boot_info);
 
 	for(;;); /* infinite loop for halting CPU */
 }
