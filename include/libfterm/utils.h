@@ -22,19 +22,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef _KERNEL_H_
-#define _KERNEL_H_
+#ifndef _LIBFTERM_UTILS_H_
+#define _LIBFTERM_UTILS_H_
 
-#define __OS_NAME__    "fallout-terminal-os"
-#define __OS_VERSION__ "v0.0.1"
-#define __OS_ARCH__    "x86_32"
+#define TERMINAL_TITLE_SIZE  128
+#define OPTION_TITLE_SIZE    32
+#define OPTION_SIZE          128
+#define CONTENT_SIZE         512
+#define DEFAULT_DELAY        32
+#define DEFAULT_FIELD_WIDTH  64
 
-#include <kernel/multiboot.h>
-#include <libk/stdint.h>
-#include <kernel/sstd.h>
+typedef enum { 
+    TEXT,
+    DIRECTORY,
+    ERROR
+} terminal_msg_t;
 
-
-/* kernel main function */
-extern void kmain(uint32_t magic, multiboot_t *boot_info);
-
-#endif /* _KERNEL_H_ */
+#endif /* _LIBFTERM_UTILS_H_ */

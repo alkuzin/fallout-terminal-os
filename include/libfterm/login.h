@@ -22,19 +22,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef _KERNEL_H_
-#define _KERNEL_H_
+#ifndef _LIBFTERM_LOGIN_H_
+#define _LIBFTERM_LOGIN_H_
 
-#define __OS_NAME__    "fallout-terminal-os"
-#define __OS_VERSION__ "v0.0.1"
-#define __OS_ARCH__    "x86_32"
+#include <libfterm/utils.h>
+#include <libk/stddef.h>
+ 
+#define MAX_ATTEMPTS   5
+#define INPUT_SIZE     10
+#define PASSW_MAX_LEN  16
+#define STRING_ROWS    12
+#define STRING_SIZE    16
+#define LOCK_OUT_TIME  10 /* 10 sec. */
 
-#include <kernel/multiboot.h>
-#include <libk/stdint.h>
-#include <kernel/sstd.h>
+/* the most secret password ever */
+#define SUPER_SECRET_PASSW      "12345"
+#define SUPER_SECRET_PASSW_SIZE 5
 
+typedef struct login_s {
+    char title[TERMINAL_TITLE_SIZE];
+    char password[PASSW_MAX_LEN + 1];
+    int  attempts;
+} login_t;
 
-/* kernel main function */
-extern void kmain(uint32_t magic, multiboot_t *boot_info);
+extern login_t *login_window;
 
-#endif /* _KERNEL_H_ */
+/* initialize user authorisation */
+bool login_init(const char *title);
+
+/* successful user authorisation window*/ 
+void login_success(const char *success_msg);
+
+/* failed user authorisation window */
+void login_failure(const char *failure_msg);
+
+#endif /* _LIBFTERM_LOGIN_H_ */ 

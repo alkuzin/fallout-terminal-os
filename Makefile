@@ -10,9 +10,11 @@ MM_DIR      = $(KERNEL_DIR)/mm
 LIBK_DIR    = $(KERNEL_DIR)/libk
 KERNEL_LIB  = $(LIBK_DIR)/libk.a
 KSH_DIR     = $(KERNEL_DIR)/shell
+LIBFTERM_DIR = $(KERNEL_DIR)/libfterm
+FTERM_LIB    = $(LIBFTERM_DIR)/libfterm.a
 
-NAME     = $(BUILD_DIR)/simple_os.elf
-NAME_ISO = simple_os.iso
+NAME     = $(BUILD_DIR)/fallout-terminal-os.elf
+NAME_ISO = fallout-terminal-os.iso
 LFLAGS   = -z noexecstack -m elf_i386 -T
 
 OBJS = $(KERNEL_DIR)/_kernel.o \
@@ -30,10 +32,11 @@ $(OBJS):
 	$(MAKE) -C $(DRIVERS_DIR) all
 	$(MAKE) -C $(MM_DIR) all
 	$(MAKE) -C $(KSH_DIR) all
+	$(MAKE) -C $(LIBFTERM_DIR) all
 
 $(NAME): $(OBJS)
 	mkdir -p $(BUILD_DIR)
-	ld $(LFLAGS) $(KERNEL_DIR)/linker.ld -o $(NAME) $(OBJS) $(KERNEL_LIB)
+	ld $(LFLAGS) $(KERNEL_DIR)/linker.ld -o $(NAME) $(OBJS) $(KERNEL_LIB) $(FTERM_LIB)
 
 all: $(NAME) build-iso
 
@@ -45,6 +48,7 @@ clean:
 	$(MAKE) -C $(DRIVERS_DIR) fclean
 	$(MAKE) -C $(MM_DIR) fclean
 	$(MAKE) -C $(KSH_DIR) fclean
+	$(MAKE) -C $(LIBFTERM_DIR) fclean
 
 fclean: clean
 	rm -f $(NAME)

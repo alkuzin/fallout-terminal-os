@@ -22,19 +22,48 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef _KERNEL_H_
-#define _KERNEL_H_
+#ifndef _LIBFTERM_TERMINAL_H_
+#define _LIBFTERM_TERMINAL_H_
 
-#define __OS_NAME__    "fallout-terminal-os"
-#define __OS_VERSION__ "v0.0.1"
-#define __OS_ARCH__    "x86_32"
-
-#include <kernel/multiboot.h>
+#include <libfterm/utils.h>
+#include <libk/stddef.h>
 #include <libk/stdint.h>
-#include <kernel/sstd.h>
+#include <kernel/vga.h>
 
+typedef struct option_s {
+    char title[OPTION_TITLE_SIZE];
+    int  type;
+    int  size;
+    void *content;
+} option_t;
 
-/* kernel main function */
-extern void kmain(uint32_t magic, multiboot_t *boot_info);
+typedef struct terminal_s {
+    char        title[TERMINAL_TITLE_SIZE];
+    uint16_t    field_width;
+    option_t    *options;
+    option_t    *prev_options;
+    option_t    *parent_window;
+    vga_color_t fg; /* foreground color */
+    vga_color_t bg; /* background color */
+} terminal_t;
 
-#endif /* _KERNEL_H_ */
+extern terminal_t *terminal;
+
+// selected option index
+extern int  selected;
+extern bool is_terminal_set;
+
+/* initialize terminal */
+void terminal_init(const char *title, uint16_t fw, option_t *opt_list);
+
+/* set terminal foreground & background colors */
+void terminal_set_theme(vga_color_t fg, vga_color_t bg);
+
+void terminal_print_options(void);
+
+void terminal_print_content(void);
+
+/* set option content (text, list of options or error) */
+void terminal_set_option_content(option_t *option, void* content);
+
+#endif /* _LIBFTERM_TERMINAL_H_ */
