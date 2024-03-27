@@ -28,9 +28,10 @@ SOFTWARE.
 #include <libk/stdarg.h>
 #include <kernel/vga.h>
 
-#define TTY_FG_COLOR  VGA_COLOR_WHITE
-#define TTY_BG_COLOR  VGA_COLOR_BLUE
-#define TTY_TAB_WIDTH 4
+#define TTY_FG_COLOR      VGA_COLOR_WHITE
+#define TTY_BG_COLOR      VGA_COLOR_BLUE
+#define TTY_TAB_WIDTH     4
+#define DELAY_COEFFICIENT 25
 
 /* for NULL pointer in kprintf */
 #define __NIL__ "(nil)"
@@ -44,8 +45,17 @@ void kprintf(const char *fmt, ...);
 /* print colored text to screen */
 void kprintc(const char* str, enum vga_color fg, enum vga_color bg);
 
+/* print colored char to screen */
+void kputcharc(int c, vga_color_t color);
+
+/* slowed text print */
+void kprints(const char* str, uint32_t delay);
+
 /* print text to screen */
 void kprint(const char *str);
+
+/* print text to screen with \n in the end */
+void kputs(const char *str);
 
 /* print character to screen */
 void kputchar(const int c);

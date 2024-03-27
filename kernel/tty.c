@@ -23,6 +23,7 @@ VGA_SOFTWARE.
 */
 
 #include <kernel/kernel.h>
+#include <kernel/sstd.h>
 #include <libk/stdint.h>
 #include <libk/memory.h>
 #include <kernel/tty.h>
@@ -84,6 +85,9 @@ void __kclear(void)
 		video_memory[i] = vga_entry(' ', default_color);
 		i++;
 	}
+    x_pos = 0;
+    y_pos = 0;
+    update_cursor(0, 0);
 }
 
 void kprint(const char *str)
@@ -105,12 +109,12 @@ void kprintc(const char* str, vga_color_t fg, vga_color_t bg)
     color = vga_entry_color(fg, bg);
 	i = 0;
     while (str[i]) {
-		__kputchar_at(str[i], color, x_pos, y_pos);
+        kputcharc(str[i], color);
 		i++;
 	}
 }
 
-void kputchar(const int c)
+void kputcharc(int c, vga_color_t color)
 {
 	if(x_pos >= VGA_SCREEN_WIDTH) {
 		x_pos = 0;
@@ -146,18 +150,22 @@ void kputchar(const int c)
 			    y_pos--;
                 x_pos = VGA_SCREEN_WIDTH;
             }
-			__kputchar_at(' ', default_color, x_pos, y_pos);
+			__kputchar_at(' ', color, x_pos, y_pos);
 			break;
 		
 		default:
             if(isprint(c)) {
-			    __kputchar_at(c, default_color, x_pos, y_pos);
+			    __kputchar_at(c, color, x_pos, y_pos);
 			    x_pos++;
             }
 			break;
 	};
 
 	update_cursor(x_pos, y_pos);	
+}
+
+void kputchar(const int c) {
+    kputcharc(c, default_color);
 }
 
 void kpanic(const char *fmt, ...)
@@ -186,4 +194,23 @@ void __tty_set_x(int x) {
 
 void __tty_set_y(int y) {
     y_pos = y;
+}
+
+void kprints(const char* str, uint32_t delay)
+{
+    int i;
+
+    i = 0;
+
+    while (str[i]) {   
+        kputchar(str[i]);
+        __ksleep(delay * DELAY_COEFFICIENT);
+        i++;
+    }
+}
+
+void kputs(const char *str)
+{
+    kprint(str);
+    kputchar('\n');
 }
